@@ -53,7 +53,7 @@ func (p ProjectMetric) view() {
 }
 
 func viewEvolutionMetrics(metrics []ProjectMetric) {
-	fmt.Printf("%10s: %7s | %9s | %10s | %7s \n", "Version", "Long File", "Long Method", "Complexity", "Comment")
+	fmt.Printf("%10s: %7s | %9s | %10s | %7s \n", "Version", "Long File", "Long Method", "Nesting Depth", "Comment")
 	for _, i := range metrics {
 		fmt.Printf("%10s: %7f | %9f | %10f | %7f\n", i.VersionName, i.TooLongFiles, i.TooLongMethods, i.NestingDepth, i.CommentIncompleteness)
 	}

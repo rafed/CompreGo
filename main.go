@@ -15,8 +15,8 @@ var LONG_METHOD_THRESHOLD int
 
 func main() {
 
-	lf := flag.Int("lf", 750, "Long File Threshold (deafult 750)")
-	lm := flag.Int("lm", 75, "Long Method Threshold (default 75)")
+	lf := flag.Int("lf", 750, "Long File Threshold")
+	lm := flag.Int("lm", 75, "Long Method Threshold")
 
 	d := flag.String("d", "", "maintainibility metrics of a project")
 	e := flag.String("e", "", "evolution of maintainibility metrics for each version")
