@@ -12,11 +12,13 @@ import (
 
 var LONG_FILE_THRESHOLD int
 var LONG_METHOD_THRESHOLD int
+var NESTING_DEPTH_THRESHOLD int
 
 func main() {
 
 	lf := flag.Int("lf", 750, "Long File Threshold")
 	lm := flag.Int("lm", 75, "Long Method Threshold")
+	nd := flag.Int("nd", 5, "Nesting Depth Threshold")
 
 	d := flag.String("d", "", "maintainibility metrics of a project")
 	e := flag.String("e", "", "evolution of maintainibility metrics for each version")
@@ -25,6 +27,7 @@ func main() {
 
 	LONG_FILE_THRESHOLD = *lf
 	LONG_METHOD_THRESHOLD = *lm
+	NESTING_DEPTH_THRESHOLD = *nd
 
 	argsProvided := 0
 
@@ -59,7 +62,6 @@ func main() {
 		fileMetrics := findFileMetrics(*d)
 		projectMetric := findProjectMetrics(fileMetrics)
 		projectMetric.view()
-		// viewProjectMetrics(structs)
 	} else if *e != "" {
 		dirs, err := ioutil.ReadDir(*e)
 		if err != nil {
@@ -80,7 +82,7 @@ func main() {
 			}
 		}
 
-		viewEvolutionMetrics(versionWiseMetrics)
+		viewEvolutionMetrics(versionWiseMetrics, true)
 	}
 
 	fmt.Fprintf(os.Stderr, "Execution time: %s\n", time.Since(start))

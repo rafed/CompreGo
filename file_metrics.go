@@ -22,11 +22,12 @@ func findFileMetrics(filename string) []FileMetric {
 	var metrics []FileMetric
 
 	filepath.Walk(filename, func(path string, info os.FileInfo, err error) error {
-		if err == nil && !info.IsDir() && strings.HasSuffix(path, ".go") {
+		if err == nil && !info.IsDir() && strings.HasSuffix(path, ".go") && !strings.HasSuffix(path, "_test.go") {
 			fset := token.NewFileSet()
 			f, _ := parser.ParseFile(fset, path, nil, 0)
 			file, _ := ioutil.ReadFile(path)
 			contents := string(file)
+			contents += " "
 
 			if len(contents) == 0 {
 				return err

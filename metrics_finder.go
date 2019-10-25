@@ -47,9 +47,7 @@ func findMaxNestingDepth(contents string, f *ast.File, fset *token.FileSet) int 
 				v.maxNesting = 0
 			}
 
-			// println(fn.Name.Name, v.maxNesting)
-
-			if v.maxNesting > 3 {
+			if v.maxNesting > NESTING_DEPTH_THRESHOLD {
 				numOfLines := findNewLine(contents[fn.Pos()-1 : fn.End()])
 				nestedMethodLines += numOfLines
 			}
