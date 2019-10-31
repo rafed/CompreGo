@@ -72,6 +72,7 @@ func main() {
 
 		for _, d := range dirs {
 			if d.IsDir() {
+				println("analyzing ", d.Name())
 				versionPath := filepath.Join(*e, d.Name())
 				fileMetrics := findFileMetrics(versionPath)
 

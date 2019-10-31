@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"strings"
 	"unicode"
@@ -113,7 +112,7 @@ func uniqueList(s []string) []string {
 	for _, item := range s {
 		if _, ok := m[item]; ok {
 			// duplicate item
-			fmt.Println(item, "is a duplicate")
+			// fmt.Println(item, "is a duplicate")
 		} else {
 			m[item] = true
 		}

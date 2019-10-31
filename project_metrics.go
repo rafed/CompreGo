@@ -53,9 +53,6 @@ func commentCompare(c1 string, c2 string) bool {
 	c1_tokens := splitComment(c1)
 	c2_tokens := splitComment(c2)
 
-	// fmt.Printf("aaaa %v %v", c1_tokens, c1)
-	// fmt.Printf("bbbb %v %v", c2_tokens, c2)
-
 	if len(c1_tokens) != len(c2_tokens) {
 		return false
 	}
@@ -111,20 +108,20 @@ func (p ProjectMetric) view() {
 	fmt.Printf("Too Long Methods: %.2f\n", p.TooLongMethods)
 	fmt.Printf("Nesting Depth: %.2f\n", p.NestingDepth)
 	fmt.Printf("Comment Incompleteness: %.2f\n", p.CommentCoherence)
-	fmt.Printf("Comment Duplicates: %f.2f\n", p.CommentDuplicates)
+	fmt.Printf("Comment Duplicates: %.2f\n", p.CommentDuplicates)
 }
 
 // i am ripon video
 func viewEvolutionMetrics(metrics []ProjectMetric, csv bool) {
 	if csv {
-		fmt.Printf("version,long_file,long_method,complexity,comment\n")
+		fmt.Printf("version,long_file,long_method,complexity,comment_coherence,comment_duplicates\n")
 		for _, i := range metrics {
-			fmt.Printf("%s,%.2f,%.2f,%.2f,%.2f\n", i.VersionName, i.TooLongFiles, i.TooLongMethods, i.NestingDepth, i.CommentCoherence)
+			fmt.Printf("%s,%.2f,%.2f,%.2f,%.2f,%.2f\n", i.VersionName, i.TooLongFiles, i.TooLongMethods, i.NestingDepth, i.CommentCoherence, i.CommentDuplicates)
 		}
 	} else {
-		fmt.Printf("%10s: %7s | %9s | %10s | %7s \n", "Version", "Long File", "Long Method", "Complexity", "Comment")
+		fmt.Printf("%10s: %7s | %9s | %10s | %13s | %13s\n", "Version", "Long File", "Long Method", "Complexity", "Cmt Coherence", "Cmt duplicate")
 		for _, i := range metrics {
-			fmt.Printf("%10s: %7f | %9f | %10f | %7f\n", i.VersionName, i.TooLongFiles, i.TooLongMethods, i.NestingDepth, i.CommentCoherence)
+			fmt.Printf("%10s: %7f | %9f | %10f | %13f | %13s\n", i.VersionName, i.TooLongFiles, i.TooLongMethods, i.NestingDepth, i.CommentCoherence, i.CommentDuplicates)
 		}
 	}
 }
