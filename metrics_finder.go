@@ -83,7 +83,6 @@ func (v *blockNestingVisitor) calcTotalNesting(b *ast.BlockStmt) {
 	v.totalNesting += c
 }
 
-// cALC Max Nesting boo
 func (v *blockNestingVisitor) calcMaxNesting(b *ast.BlockStmt) {
 	/* damn nigga */
 	depth := 0
@@ -98,8 +97,9 @@ func (v *blockNestingVisitor) calcMaxNesting(b *ast.BlockStmt) {
 	v.blocks = append(v.blocks, b)
 }
 
-//hbdj shjdbdj skhdbdsjhb
 func findWordMatch(cms []string, names []string) float64 {
+	cms = uniqueList(cms)
+	names = uniqueList(names)
 	var matches []string
 	for _, c := range cms {
 		for _, w := range names {
@@ -116,8 +116,8 @@ func findWordMatch(cms []string, names []string) float64 {
 	return ans
 }
 
-// tui akta , coments sf12312 12412 asd
-func findComments(contents string, f *ast.File, fset *token.FileSet) (int, int) {
+func findComments(contents string, f *ast.File, fset *token.FileSet) (int, int, []string) {
+	var allComments []string
 	badComment := 0
 	total := 0
 	for _, decl := range f.Decls {
@@ -132,6 +132,8 @@ func findComments(contents string, f *ast.File, fset *token.FileSet) (int, int) 
 				continue
 			}
 
+			allComments = append(allComments, comment)
+
 			coherence := findWordMatch(cms, nam)
 
 			if coherence == 0 || coherence > .5 {
@@ -141,7 +143,7 @@ func findComments(contents string, f *ast.File, fset *token.FileSet) (int, int) 
 		}
 	}
 
-	return badComment, total
+	return badComment, total, allComments
 }
 
 func findCommentCoherence(badComments int, totalComments int) float64 {

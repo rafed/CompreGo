@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"strings"
 	"unicode"
@@ -105,4 +106,22 @@ func levenshteinDistance(s, t string) int {
 
 	}
 	return d[len(s)][len(t)]
+}
+
+func uniqueList(s []string) []string {
+	m := make(map[string]bool)
+	for _, item := range s {
+		if _, ok := m[item]; ok {
+			// duplicate item
+			fmt.Println(item, "is a duplicate")
+		} else {
+			m[item] = true
+		}
+	}
+
+	var result []string
+	for item := range m {
+		result = append(result, item)
+	}
+	return result
 }

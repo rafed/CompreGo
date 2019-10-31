@@ -17,6 +17,7 @@ type FileMetric struct {
 	FileLength      int
 	TotalComments   int
 	BadComments     int
+	Comment         []string
 }
 
 func findFileMetrics(filename string) []FileMetric {
@@ -39,7 +40,7 @@ func findFileMetrics(filename string) []FileMetric {
 			metric.FileLength = findFileLength(contents)
 			metric.TooLongMethod = findTooLongMethod(contents, f, fset, LONG_METHOD_THRESHOLD)
 			metric.MaxNestingDepth = findMaxNestingDepth(contents, f, fset)
-			metric.BadComments, metric.TotalComments = findComments(contents, f, fset)
+			metric.BadComments, metric.TotalComments, metric.Comment = findComments(contents, f, fset)
 
 			metrics = append(metrics, metric)
 		}
