@@ -34,20 +34,26 @@ func findTooLongMethod(contents string, f *ast.File, fset *token.FileSet, thresh
 	return longMethodLines
 }
 
+var maxBlockDepth int
+
 func findMaxNestingDepth(contents string, f *ast.File, fset *token.FileSet) int {
 	nestedMethodLines := 0
 	for _, decl := range f.Decls {
 		if fn, ok := decl.(*ast.FuncDecl); ok {
-			v := &blockNestingVisitor{
-				contents: contents,
+			// v := &blockNestingVisitor{
+			// 	contents: contents,
+			// }
+			// ast.Walk(v, fn)
+			// println("depth", v.maxNesting) /////////////////////
+
+			maxBlockDepth = 0
+			v := &visitor2{
+				depth:        0,
+				blockCounter: 0,
 			}
 			ast.Walk(v, fn)
 
-			if v.maxNesting == 0 {
-				v.maxNesting = 0
-			}
-
-			if v.maxNesting > NESTING_DEPTH_THRESHOLD {
+			if v.blockCounter >= NESTING_DEPTH_THRESHOLD {
 				numOfLines := findNewLine(contents[fn.Pos()-1 : fn.End()])
 				nestedMethodLines += numOfLines
 			}
@@ -56,46 +62,73 @@ func findMaxNestingDepth(contents string, f *ast.File, fset *token.FileSet) int 
 	return nestedMethodLines
 }
 
-type blockNestingVisitor struct {
-	blocks       []*ast.BlockStmt
-	maxNesting   int
-	totalNesting int
-	contents     string
+type visitor2 struct {
+	depth        int
+	blockCounter int
 }
 
-func (v *blockNestingVisitor) Visit(node ast.Node) ast.Visitor {
-	if v.blocks == nil {
-		v.blocks = make([]*ast.BlockStmt, 0)
+func (v *visitor2) Visit(n ast.Node) ast.Visitor {
+	if n == nil {
+		return v
 	}
-	if node != nil {
-		if b, is := node.(*ast.BlockStmt); is {
-			v.calcMaxNesting(b)
-			v.calcTotalNesting(b)
-		}
+
+	if v.blockCounter > maxBlockDepth {
+		maxBlockDepth = v.blockCounter
 	}
+
+	// fmt.Printf("%s%T\n", strings.Repeat("\t", v.depth), n)
+
+	switch n.(type) {
+	case *ast.IfStmt, *ast.ForStmt, *ast.SwitchStmt: //*ast.FuncDecl, *ast.IfStmt:
+		v.blockCounter++
+	}
+
+	v.depth++
 	return v
 }
 
-func (v *blockNestingVisitor) calcTotalNesting(b *ast.BlockStmt) {
-	body := v.contents[b.Pos()-1 : b.End()]
-	body = strings.TrimSpace(strings.Trim(strings.TrimSpace(body), "{}"))
-	c := findNewLine(body)
-	v.totalNesting += c
-}
+// type blockNestingVisitor struct {
+// 	blocks       []*ast.BlockStmt
+// 	maxNesting   int
+// 	totalNesting int
+// 	contents     string
+// }
 
-func (v *blockNestingVisitor) calcMaxNesting(b *ast.BlockStmt) {
-	/* damn nigga */
-	depth := 0
-	for _, previous := range v.blocks {
-		if previous.Pos() < b.Pos() && b.End() < previous.End() {
-			depth++
-			if depth > v.maxNesting {
-				v.maxNesting = depth
-			}
-		}
-	}
-	v.blocks = append(v.blocks, b)
-}
+// func (v *blockNestingVisitor) Visit(node ast.Node) ast.Visitor {
+// 	if v.blocks == nil {
+// 		v.blocks = make([]*ast.BlockStmt, 0)
+// 		// fmt.Printf("%v", v.block)
+// 	}
+// 	if node != nil {
+// 		// depthCounter = 0
+
+// 		if b, is := node.(*ast.BlockStmt); is {
+// 			v.calcMaxNesting(b)
+// 			v.calcTotalNestingLines(b)
+// 		}
+// 	}
+// 	return v
+// }
+
+// func (v *blockNestingVisitor) calcMaxNesting(b *ast.BlockStmt) {
+// 	depth := 0
+// 	for _, previous := range v.blocks {
+// 		if previous.Pos() < b.Pos() && b.End() < previous.End() {
+// 			depth++
+// 			if depth > v.maxNesting {
+// 				v.maxNesting = depth
+// 			}
+// 		}
+// 	}
+// 	v.blocks = append(v.blocks, b)
+// }
+
+// func (v *blockNestingVisitor) calcTotalNestingLines(b *ast.BlockStmt) {
+// 	body := v.contents[b.Pos()-1 : b.End()]
+// 	body = strings.TrimSpace(strings.Trim(strings.TrimSpace(body), "{}"))
+// 	c := findNewLine(body)
+// 	v.totalNesting += c
+// }
 
 func findWordMatch(cms []string, names []string) float64 {
 	cms = uniqueList(cms)
