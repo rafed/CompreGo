@@ -1,9 +1,11 @@
 package main
 
 import (
+	"bufio"
 	"go/parser"
 	"go/token"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -23,8 +25,25 @@ type FileMetric struct {
 func findFileMetrics(filename string) []FileMetric {
 	var metrics []FileMetric
 
+	file, err := os.Open("./ignore_dirs.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+
+	var ignoreList []string
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		ignoreList = append(ignoreList, scanner.Text())
+	}
+
 	filepath.Walk(filename, func(path string, info os.FileInfo, err error) error {
-		if err == nil && !info.IsDir() && strings.HasSuffix(path, ".go") { /* && !strings.HasSuffix(path, "_test.go") */
+		if info.IsDir() && stringInSlice(info.Name(), ignoreList) {
+			return filepath.SkipDir
+		}
+
+		if err == nil && !info.IsDir() && strings.HasSuffix(path, ".go") && !strings.HasSuffix(path, "_test.go") { /*  */
 			fset := token.NewFileSet()
 			f, _ := parser.ParseFile(fset, path, nil, parser.ParseComments)
 			file, _ := ioutil.ReadFile(path)
@@ -39,7 +58,8 @@ func findFileMetrics(filename string) []FileMetric {
 			metric.FileName = path
 			metric.FileLength = findFileLength(contents)
 			metric.TooLongMethod = findTooLongMethod(contents, f, fset, LONG_METHOD_THRESHOLD)
-			metric.MaxNestingDepth = findMaxNestingDepth(contents, f, fset)
+			// println(info.Name())
+			metric.MaxNestingDepth = findMaxNestingDepth(contents, f, fset, path)
 			metric.BadComments, metric.TotalComments, metric.Comment = findComments(contents, f, fset)
 
 			metrics = append(metrics, metric)

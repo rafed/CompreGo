@@ -83,8 +83,8 @@ func main() {
 			}
 		}
 
-		viewEvolutionMetrics(versionWiseMetrics, true)
+		viewEvolutionMetrics(versionWiseMetrics, false)
 	}
 
-	fmt.Fprintf(os.Stderr, "Execution time: %s\n", time.Since(start))
+	fmt.Fprintf(os.Stderr, "\nExecution time: %s\n", time.Since(start))
 }

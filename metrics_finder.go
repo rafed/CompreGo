@@ -36,10 +36,17 @@ func findTooLongMethod(contents string, f *ast.File, fset *token.FileSet, thresh
 
 var maxBlockDepth int
 
-func findMaxNestingDepth(contents string, f *ast.File, fset *token.FileSet) int {
+func findMaxNestingDepth(contents string, f *ast.File, fset *token.FileSet, path string) int {
 	nestedMethodLines := 0
 	for _, decl := range f.Decls {
 		if fn, ok := decl.(*ast.FuncDecl); ok {
+
+			// if fn.Name.Name != "ReadPrefixed" {
+			// 	continue
+			// }
+
+			// a := astutil.AddImport(fset, f, path)
+
 			// v := &blockNestingVisitor{
 			// 	contents: contents,
 			// }
@@ -53,10 +60,12 @@ func findMaxNestingDepth(contents string, f *ast.File, fset *token.FileSet) int 
 			}
 			ast.Walk(v, fn)
 
-			if v.blockCounter >= NESTING_DEPTH_THRESHOLD {
+			if maxBlockDepth >= NESTING_DEPTH_THRESHOLD {
 				numOfLines := findNewLine(contents[fn.Pos()-1 : fn.End()])
 				nestedMethodLines += numOfLines
+				// println("\t", fn.Name.Name)
 			}
+
 		}
 	}
 	return nestedMethodLines
@@ -67,7 +76,7 @@ type visitor2 struct {
 	blockCounter int
 }
 
-func (v *visitor2) Visit(n ast.Node) ast.Visitor {
+func (v visitor2) Visit(n ast.Node) ast.Visitor {
 	if n == nil {
 		return v
 	}
@@ -76,7 +85,7 @@ func (v *visitor2) Visit(n ast.Node) ast.Visitor {
 		maxBlockDepth = v.blockCounter
 	}
 
-	// fmt.Printf("%s%T\n", strings.Repeat("\t", v.depth), n)
+	// fmt.Printf("%d %s%T\n", v.blockCounter, strings.Repeat("\t", v.depth), n)
 
 	switch n.(type) {
 	case *ast.IfStmt, *ast.ForStmt, *ast.SwitchStmt: //*ast.FuncDecl, *ast.IfStmt:
@@ -185,4 +194,11 @@ func findCommentCoherence(badComments int, totalComments int) float64 {
 	}
 	ans := float64(badComments) / float64(totalComments)
 	return ans
+}
+
+func findDuplicateComments(commentDuplicates int, totalComments int) float64 {
+	if totalComments == 0 {
+		totalComments++
+	}
+	return float64(commentDuplicates) / float64(totalComments)
 }

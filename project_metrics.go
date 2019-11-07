@@ -18,10 +18,12 @@ func findProjectMetrics(metrics []FileMetric) ProjectMetric {
 		total_sloc += i.FileLength
 
 		if i.FileLength > LONG_FILE_THRESHOLD {
+			// println(i.FileName)
 			too_long_files += i.FileLength
 		}
 
 		if i.TooLongMethod > LONG_METHOD_THRESHOLD {
+			// println(i.FileName)
 			too_long_methods += i.TooLongMethod
 		}
 
@@ -44,7 +46,7 @@ func findProjectMetrics(metrics []FileMetric) ProjectMetric {
 	m.TooLongMethods = float64(too_long_methods) / float64(total_sloc) * 100
 	m.NestingDepth = float64(nesting_depth_sloc) / float64(total_sloc) * 100
 	m.CommentCoherence = findCommentCoherence(bad_comments, total_comments) * 100
-	m.CommentDuplicates = float64(commentDuplicates) / float64(total_comments) * 100
+	m.CommentDuplicates = findDuplicateComments(commentDuplicates, total_comments) * 100
 
 	return m
 }
@@ -104,24 +106,25 @@ type ProjectMetric struct {
 // I am ripon videos
 func (p ProjectMetric) view() {
 	fmt.Println("--- Project Maintainibility Metrics ---")
-	fmt.Printf("Too Long Files: %.2f\n", p.TooLongFiles)
-	fmt.Printf("Too Long Methods: %.2f\n", p.TooLongMethods)
-	fmt.Printf("Nesting Depth: %.2f\n", p.NestingDepth)
-	fmt.Printf("Comment Incompleteness: %.2f\n", p.CommentCoherence)
-	fmt.Printf("Comment Duplicates: %.2f\n", p.CommentDuplicates)
+	fmt.Printf("%25s: %05.2f\n", "Too Long Files", p.TooLongFiles)
+	fmt.Printf("%25s: %05.2f\n", "Too Long Files", p.TooLongMethods)
+	fmt.Printf("%25s: %05.2f\n", "Nesting Depth", p.NestingDepth)
+	fmt.Printf("%25s: %05.2f\n", "Lack of cohesive comments", p.CommentCoherence)
+	fmt.Printf("%25s: %05.2f\n", "Duplicate comments", p.CommentDuplicates)
 }
 
 // i am ripon video
 func viewEvolutionMetrics(metrics []ProjectMetric, csv bool) {
+	fmt.Println()
 	if csv {
 		fmt.Printf("version,long_file,long_method,complexity,comment_coherence,comment_duplicates\n")
 		for _, i := range metrics {
 			fmt.Printf("%s,%.2f,%.2f,%.2f,%.2f,%.2f\n", i.VersionName, i.TooLongFiles, i.TooLongMethods, i.NestingDepth, i.CommentCoherence, i.CommentDuplicates)
 		}
 	} else {
-		fmt.Printf("%10s: %7s | %9s | %10s | %13s | %13s\n", "Version", "Long File", "Long Method", "Complexity", "Cmt Coherence", "Cmt duplicate")
+		fmt.Printf("%-10s | %5s | %5s | %5s | %5s | %5s\n", "Version", "TLF", "TLM", "ND", "LCC", "DC")
 		for _, i := range metrics {
-			fmt.Printf("%10s: %7f | %9f | %10f | %13f | %13s\n", i.VersionName, i.TooLongFiles, i.TooLongMethods, i.NestingDepth, i.CommentCoherence, i.CommentDuplicates)
+			fmt.Printf("%-10s | %5.2f | %5.2f | %5.2f | %5.2f | %5.2f\n", i.VersionName, i.TooLongFiles, i.TooLongMethods, i.NestingDepth, i.CommentCoherence, i.CommentDuplicates)
 		}
 	}
 }
