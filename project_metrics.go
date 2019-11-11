@@ -65,11 +65,11 @@ type ProjectMetric struct {
 // I am ripon videos
 func (p ProjectMetric) view() {
 	fmt.Println("--- Project Maintainability Metrics ---")
-	fmt.Printf("%25s: %05.2f\n", "Too Long Files", p.TooLongFiles)
-	fmt.Printf("%25s: %05.2f\n", "Too Long Files", p.TooLongMethods)
-	fmt.Printf("%25s: %05.2f\n", "Nesting Depth", p.NestingDepth)
-	fmt.Printf("%25s: %05.2f\n", "Lack of cohesive comments", p.CommentCoherence)
-	fmt.Printf("%25s: %05.2f\n", "Duplicate comments", p.CommentDuplicates)
+	fmt.Printf("%-25s: %05.2f\n", "Too Long Files", p.TooLongFiles)
+	fmt.Printf("%-25s: %05.2f\n", "Too Long Files", p.TooLongMethods)
+	fmt.Printf("%-25s: %05.2f\n", "Nesting Depth", p.NestingDepth)
+	fmt.Printf("%-25s: %05.2f\n", "Lack of cohesive comments", p.CommentCoherence)
+	fmt.Printf("%-25s: %05.2f\n", "Duplicate comments", p.CommentDuplicates)
 }
 
 // i am ripon video
@@ -101,7 +101,7 @@ func viewMetricValues(metrics []FileMetric, TLF bool, TLM bool, ND bool, LCC boo
 		fmt.Println("\nToo Long Methods:")
 		for _, i := range metrics {
 			for _, j := range i.tooLongMethods {
-				fmt.Printf("  %s:%s() len:%d\n", i.FileName, j.FunctionName, j.TooLongMethodLength)
+				fmt.Printf("  %s:%s()  len:%d\n", i.FileName, j.FunctionName, j.TooLongMethodLength)
 			}
 		}
 	}
@@ -118,13 +118,14 @@ func viewMetricValues(metrics []FileMetric, TLF bool, TLM bool, ND bool, LCC boo
 		for _, i := range metrics {
 			for _, j := range i.badComments {
 				fmt.Printf("  %s:%s()\n", i.FileName, j.FunctionName)
-				fmt.Printf("    Comment: %s", j.comment)
+				fmt.Printf("  Comment: %s\n", j.comment)
 			}
 		}
 	}
 	if DC {
 		fmt.Println("\nDuplicate Comments:")
 		for _, i := range metrics {
+			// if len()
 			fmt.Printf("  %s\n", i.FileName)
 			for c, j := range i.duplicateComments.duplicates {
 				fmt.Printf("    [%d] %s", c, j.d1)
