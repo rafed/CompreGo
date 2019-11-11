@@ -23,6 +23,21 @@ func main() {
 	d := flag.String("d", "", "maintainibility metrics of a project")
 	e := flag.String("e", "", "evolution of maintainibility metrics for each version")
 
+	TLF := flag.Bool("TLF", false, "Show too long files")
+	TLM := flag.Bool("TLM", false, "Show too long methods")
+	ND := flag.Bool("ND", false, "Show methods with deep nesting methods")
+	LCC := flag.Bool("LCC", false, "Show comments with low cohesion")
+	DC := flag.Bool("DC", false, "Show duplicate comments")
+	ALL := flag.Bool("ALL", false, "Show verbose results")
+
+	if *ALL {
+		*TLF = true
+		*TLM = true
+		*ND = true
+		*LCC = true
+		*DC = true
+	}
+
 	flag.Parse()
 
 	LONG_FILE_THRESHOLD = *lf
@@ -62,6 +77,8 @@ func main() {
 		fileMetrics := findFileMetrics(*d)
 		projectMetric := findProjectMetrics(fileMetrics)
 		projectMetric.view()
+		viewMetricValues(fileMetrics, *TLF, *TLM, *ND, *LCC, *DC)
+
 	} else if *e != "" {
 		dirs, err := ioutil.ReadDir(*e)
 		if err != nil {

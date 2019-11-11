@@ -6,92 +6,51 @@ import (
 
 // i am ripo video
 func findProjectMetrics(metrics []FileMetric) ProjectMetric {
-	total_sloc := 0
-	too_long_files := 0
-	too_long_methods := 0
-	nesting_depth_sloc := 0
-	bad_comments := 0
-	total_comments := 0
+	totalSloc := 0
+	tooLongFiles := 0
+	tooLongMethods := 0
+	nestingDepthSloc := 0
+	totalComments := 0
+
+	badComments := 0
 	commentDuplicates := 0
 
 	for _, i := range metrics {
-		total_sloc += i.FileLength
+		totalSloc += i.FileLength
 
 		if i.FileLength > LONG_FILE_THRESHOLD {
 			// println(i.FileName)
-			too_long_files += i.FileLength
+			tooLongFiles += i.FileLength
 		}
 
-		if i.TooLongMethod > LONG_METHOD_THRESHOLD {
-			// println(i.FileName)
-			too_long_methods += i.TooLongMethod
+		for _, lm := range i.tooLongMethods {
+			if lm.TooLongMethodLength > LONG_METHOD_THRESHOLD {
+				tooLongMethods += lm.TooLongMethodLength
+			}
 		}
 
-		nesting_depth_sloc += i.MaxNestingDepth
+		for _, nd := range i.nestingDepth {
+			nestingDepthSloc += nd.MaxNestingDepth
+		}
 
-		bad_comments += i.BadComments
-		total_comments += i.TotalComments
-
-		commentDuplicates += countCommentSimilarity(i.Comment)
-
+		totalComments += i.totalComments
+		badComments += len(i.badComments)
+		commentDuplicates += i.duplicateComments.count
 	}
 
 	var m ProjectMetric
 
-	if total_sloc == 0 {
-		total_sloc++
+	if totalSloc == 0 {
+		totalSloc++
 	}
 
-	m.TooLongFiles = float64(too_long_files) / float64(total_sloc) * 100
-	m.TooLongMethods = float64(too_long_methods) / float64(total_sloc) * 100
-	m.NestingDepth = float64(nesting_depth_sloc) / float64(total_sloc) * 100
-	m.CommentCoherence = findCommentCoherence(bad_comments, total_comments) * 100
-	m.CommentDuplicates = findDuplicateComments(commentDuplicates, total_comments) * 100
+	m.TooLongFiles = float64(tooLongFiles) / float64(totalSloc) * 100
+	m.TooLongMethods = float64(tooLongMethods) / float64(totalSloc) * 100
+	m.NestingDepth = float64(nestingDepthSloc) / float64(totalSloc) * 100
+	m.CommentCoherence = findCommentCoherence(badComments, totalComments) * 100
+	m.CommentDuplicates = findDuplicateComments(commentDuplicates, totalComments) * 100
 
 	return m
-}
-
-func commentCompare(c1 string, c2 string) bool {
-	c1_tokens := splitComment(c1)
-	c2_tokens := splitComment(c2)
-
-	if len(c1_tokens) != len(c2_tokens) {
-		return false
-	}
-
-	for w := range c1_tokens {
-		if levenshteinDistance(c1_tokens[w], c2_tokens[w]) >= 2 {
-			return false
-		}
-	}
-	return true
-}
-
-//I am ripon video
-func countCommentSimilarity(comments []string) int {
-
-	var uniqs []string
-
-	if len(comments) < 2 {
-		return 0
-	}
-
-	uniqs = append(uniqs, comments[0])
-
-	for _, c := range comments[1:] {
-		matched := 0
-		for _, u := range uniqs {
-			if commentCompare(c, u) {
-				matched = 1
-				break
-			}
-		}
-		if matched == 0 {
-			uniqs = append(uniqs, c)
-		}
-	}
-
-	return len(comments) - len(uniqs)
 }
 
 type ProjectMetric struct {
@@ -105,7 +64,7 @@ type ProjectMetric struct {
 
 // I am ripon videos
 func (p ProjectMetric) view() {
-	fmt.Println("--- Project Maintainibility Metrics ---")
+	fmt.Println("--- Project Maintainability Metrics ---")
 	fmt.Printf("%25s: %05.2f\n", "Too Long Files", p.TooLongFiles)
 	fmt.Printf("%25s: %05.2f\n", "Too Long Files", p.TooLongMethods)
 	fmt.Printf("%25s: %05.2f\n", "Nesting Depth", p.NestingDepth)
@@ -122,9 +81,55 @@ func viewEvolutionMetrics(metrics []ProjectMetric, csv bool) {
 			fmt.Printf("%s,%.2f,%.2f,%.2f,%.2f,%.2f\n", i.VersionName, i.TooLongFiles, i.TooLongMethods, i.NestingDepth, i.CommentCoherence, i.CommentDuplicates)
 		}
 	} else {
-		fmt.Printf("%-10s | %5s | %5s | %5s | %5s | %5s\n", "Version", "TLF", "TLM", "ND", "LCC", "DC")
+		fmt.Printf("%-10s | %-5s | %-5s | %-5s | %-5s | %-5s\n", "Version", "TLF", "TLM", "ND", "LCC", "DC")
 		for _, i := range metrics {
-			fmt.Printf("%-10s | %5.2f | %5.2f | %5.2f | %5.2f | %5.2f\n", i.VersionName, i.TooLongFiles, i.TooLongMethods, i.NestingDepth, i.CommentCoherence, i.CommentDuplicates)
+			fmt.Printf("%-10s | %05.2f | %05.2f | %05.2f | %05.2f | %05.2f\n", i.VersionName, i.TooLongFiles, i.TooLongMethods, i.NestingDepth, i.CommentCoherence, i.CommentDuplicates)
+		}
+	}
+}
+
+func viewMetricValues(metrics []FileMetric, TLF bool, TLM bool, ND bool, LCC bool, DC bool) {
+	if TLF {
+		fmt.Println("\nToo Long Files:")
+		for _, i := range metrics {
+			if i.FileLength > LONG_FILE_THRESHOLD {
+				fmt.Println("  ", i.FileName)
+			}
+		}
+	}
+	if TLM {
+		fmt.Println("\nToo Long Methods:")
+		for _, i := range metrics {
+			for _, j := range i.tooLongMethods {
+				fmt.Printf("  %s:%s() len:%d\n", i.FileName, j.FunctionName, j.TooLongMethodLength)
+			}
+		}
+	}
+	if ND {
+		fmt.Println("\nDeep Nesting Depth:")
+		for _, i := range metrics {
+			for _, j := range i.nestingDepth {
+				fmt.Printf("  %s:%s() depth:%d\n", i.FileName, j.FunctionName, j.MaxNestingDepth)
+			}
+		}
+	}
+	if LCC {
+		fmt.Println("\nLow Comment Cohesion:")
+		for _, i := range metrics {
+			for _, j := range i.badComments {
+				fmt.Printf("  %s:%s()\n", i.FileName, j.FunctionName)
+				fmt.Printf("    Comment: %s", j.comment)
+			}
+		}
+	}
+	if DC {
+		fmt.Println("\nDuplicate Comments:")
+		for _, i := range metrics {
+			fmt.Printf("  %s\n", i.FileName)
+			for c, j := range i.duplicateComments.duplicates {
+				fmt.Printf("    [%d] %s", c, j.d1)
+				fmt.Printf("    [%d] %s", c, j.d2)
+			}
 		}
 	}
 }

@@ -13,13 +13,40 @@ import (
 
 // FileMetric contains metrics of a file
 type FileMetric struct {
-	FileName        string
-	TooLongMethod   int
+	FileName   string
+	FileLength int
+
+	tooLongMethods []tooLongMethodStorer
+	nestingDepth   []nestingDepthStorer
+
+	totalComments     int
+	badComments       []badCommentStorer
+	duplicateComments duplicateCommentStorer
+}
+
+type tooLongMethodStorer struct {
+	FunctionName        string
+	TooLongMethodLength int
+}
+
+type nestingDepthStorer struct {
 	MaxNestingDepth int
-	FileLength      int
-	TotalComments   int
-	BadComments     int
-	Comment         []string
+	FunctionName    string
+}
+
+type badCommentStorer struct {
+	FunctionName string
+	comment      string
+}
+
+type dup struct {
+	d1 string
+	d2 string
+}
+
+type duplicateCommentStorer struct {
+	count      int
+	duplicates []dup
 }
 
 func findFileMetrics(filename string) []FileMetric {
@@ -57,10 +84,9 @@ func findFileMetrics(filename string) []FileMetric {
 			var metric FileMetric
 			metric.FileName = path
 			metric.FileLength = findFileLength(contents)
-			metric.TooLongMethod = findTooLongMethod(contents, f, fset, LONG_METHOD_THRESHOLD)
-			// println(info.Name())
-			metric.MaxNestingDepth = findMaxNestingDepth(contents, f, fset, path)
-			metric.BadComments, metric.TotalComments, metric.Comment = findComments(contents, f, fset)
+			metric.tooLongMethods = findTooLongMethod(contents, f, fset)
+			metric.nestingDepth = findMaxNestingDepth(contents, f, fset, path)
+			metric.totalComments, metric.badComments, metric.duplicateComments = findComments(contents, f, fset)
 
 			metrics = append(metrics, metric)
 		}
