@@ -76,7 +76,7 @@ func main() {
 	if *d != "" {
 		fileMetrics := findFileMetrics(*d)
 		projectMetric := findProjectMetrics(fileMetrics)
-		projectMetric.view()
+		projectMetric.view(true)
 		viewMetricValues(fileMetrics, *TLF, *TLM, *ND, *LCC, *DC)
 
 	} else if *e != "" {

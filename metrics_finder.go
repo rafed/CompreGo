@@ -249,15 +249,15 @@ func countCommentSimilarity(comments []string) duplicateCommentStorer {
 }
 
 func commentCompare(c1 string, c2 string) bool {
-	c1_tokens := splitComment(c1)
-	c2_tokens := splitComment(c2)
+	c1Tokens := splitComment(c1)
+	c2Tokens := splitComment(c2)
 
-	if len(c1_tokens) != len(c2_tokens) {
+	if len(c1Tokens) != len(c2Tokens) {
 		return false
 	}
 
-	for w := range c1_tokens {
-		if levenshteinDistance(c1_tokens[w], c2_tokens[w]) >= 2 {
+	for w := range c1Tokens {
+		if levenshteinDistance(c1Tokens[w], c2Tokens[w]) >= 2 {
 			return false
 		}
 	}

@@ -53,6 +53,7 @@ func findProjectMetrics(metrics []FileMetric) ProjectMetric {
 	return m
 }
 
+// ProjectMetric matha amar
 type ProjectMetric struct {
 	VersionName       string
 	TooLongMethods    float64
@@ -63,13 +64,19 @@ type ProjectMetric struct {
 }
 
 // I am ripon videos
-func (p ProjectMetric) view() {
-	fmt.Println("--- Project Maintainability Metrics ---")
-	fmt.Printf("%-25s: %05.2f\n", "Too Long Files", p.TooLongFiles)
-	fmt.Printf("%-25s: %05.2f\n", "Too Long Files", p.TooLongMethods)
-	fmt.Printf("%-25s: %05.2f\n", "Nesting Depth", p.NestingDepth)
-	fmt.Printf("%-25s: %05.2f\n", "Lack of cohesive comments", p.CommentCoherence)
-	fmt.Printf("%-25s: %05.2f\n", "Duplicate comments", p.CommentDuplicates)
+func (p ProjectMetric) view(csv bool) {
+	if !csv {
+		fmt.Println("--- Project Maintainability Metrics ---")
+		fmt.Printf("%-25s: %05.2f\n", "Too Long Files", p.TooLongFiles)
+		fmt.Printf("%-25s: %05.2f\n", "Too Long Methods", p.TooLongMethods)
+		fmt.Printf("%-25s: %05.2f\n", "Nesting Depth", p.NestingDepth)
+		fmt.Printf("%-25s: %05.2f\n", "Lack of cohesive comments", p.CommentCoherence)
+		fmt.Printf("%-25s: %05.2f\n", "Duplicate comments", p.CommentDuplicates)
+	} else {
+		// fmt.Println("lf,lm,nd,lcc,cd")
+		fmt.Printf("%.2f,%.2f,%.2f,%.2f,%.2f\n", p.TooLongFiles, p.TooLongMethods, p.NestingDepth, p.CommentCoherence, p.CommentDuplicates)
+	}
+
 }
 
 // i am ripon video
