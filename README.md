@@ -1,2 +1,3 @@
-# GoMaintain
-Find maintainability metrics of Go projects 
+# CompreGo
+
+Analyze Comprehensibility of Go projects.
