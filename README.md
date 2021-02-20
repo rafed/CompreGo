@@ -46,9 +46,8 @@ To find these metrics, run-
 ./comprego -d project-directory
 ```
 
-Sample output-
-
-![Comprehensibility metrics](img/project-metrics.png)
+<!--Sample output-
+![Comprehensibility metrics](img/project-metrics.png)-->
 
 ### 2. Add optional arguments to previous command to locate sections that is not comprehensible
 
@@ -65,9 +64,8 @@ For example-
 ./comprego -d project-directory/ -TLM
 ```
 
-Sample output-
-
-![long method](img/long-method.png)
+<!--- Sample output-
+![long method](img/long-method.png)-->
 
 
 ### Set custom thresholds for metrics Calculation
