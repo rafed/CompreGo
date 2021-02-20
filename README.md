@@ -17,11 +17,7 @@ sudo apt-get install golang
 
 ### Compile the project
 
-At first, download the project-
-
-
-
-Navigate to the source files
+At first, download the project and navigate to the source files
 
 ```
 cd CompreGo/comprego
