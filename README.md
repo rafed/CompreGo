@@ -84,11 +84,6 @@ The default thresholds for TLF, TLM and ND are 750, 75 and 5 respectively. Howev
 
 Where, number represents the customized threshold value.
 
-## Authors
-
-* [**Rafed Muhammad Yasir**](https://github.com/rafed)
-* [**Moumita Asad**](https://github.com/mou23)
-* [**Shihab Shahriar**](https://github.com/Shihab-Shahriar)
 
 ## License
 
