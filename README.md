@@ -78,7 +78,7 @@ Sample output-
 
 ### Set custom thresholds for metrics Calculation
 
-The  default  thresholds  for  TLF,  TLM  and  ND  are  750, 75 and 5 respectively. However, each project and its maintainers are different and thus thresholds may need to be changed. For this  reason,  CompreGo  has  a  provision  for  customizing these thresholds.  These thresholds canbe  changed  by  adding  the  following  arguments while running the tool:–
+The default thresholds for TLF, TLM and ND are 750, 75 and 5 respectively. However, each project and its maintainers are different and thus thresholds may need to be changed. For this reason, CompreGo has a provision for customizing these thresholds. These thresholds can be changed by adding the following arguments while running the tool:–
 
 * “-lf number”: Set customized threshold for Too Long Files
 * “-lm number”: Set customized  threshold  for Too Long Methods
