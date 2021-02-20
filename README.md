@@ -19,9 +19,7 @@ sudo apt-get install golang
 
 At first, download the project-
 
-```
-git clone https://github.com/rafed/CompreGo
-```
+
 
 Navigate to the source files
 
