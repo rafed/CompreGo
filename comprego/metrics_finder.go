@@ -28,6 +28,8 @@ func findTooLongMethod(contents string, f *ast.File, fset *token.FileSet) []tooL
 			functionBody := contents[fn.Pos()-1 : fn.End()]
 
 			if numOfLines := findNewLine(functionBody); numOfLines > LONG_METHOD_THRESHOLD {
+				// fmt.Println(fn.Name.Name)
+				// fmt.Println(functionBody)
 				v.FunctionName = fn.Name.Name
 				v.TooLongMethodLength = numOfLines
 				list = append(list, v)
@@ -66,9 +68,11 @@ func findMaxNestingDepth(contents string, f *ast.File, fset *token.FileSet, path
 
 			if maxBlockDepth >= NESTING_DEPTH_THRESHOLD {
 				numOfLines := findNewLine(contents[fn.Pos()-1 : fn.End()])
-				vnds.MaxNestingDepth = numOfLines
+				vnds.MaxNestingDepth = maxBlockDepth
+				vnds.NestingDepthLines = numOfLines
 				vnds.FunctionName = fn.Name.Name
 				list = append(list, vnds)
+				// fmt.Println(contents[fn.Pos()-1 : fn.End()])
 			}
 
 		}

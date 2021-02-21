@@ -22,6 +22,7 @@ func main() {
 
 	d := flag.String("d", "", "maintainibility metrics of a project")
 	e := flag.String("e", "", "evolution of maintainibility metrics for each version")
+	// mec := flag.String("mec", "", "Method and Error correlation")
 
 	TLF := flag.Bool("TLF", false, "Show too long files")
 	TLM := flag.Bool("TLM", false, "Show too long methods")
@@ -65,18 +66,18 @@ func main() {
 		argsProvided++
 	}
 
-	if argsProvided > 1 || argsProvided == 0 {
-		flag.PrintDefaults()
-		os.Exit(1)
-	}
+	// if argsProvided == 0 {
+	// 	flag.PrintDefaults()
+	// 	os.Exit(1)
+	// }
 
-	// // FLAG STUFF DONE
+	// FLAG STUFF DONE
 	start := time.Now()
 
 	if *d != "" {
 		fileMetrics := findFileMetrics(*d)
 		projectMetric := findProjectMetrics(fileMetrics)
-		projectMetric.view(true)
+		projectMetric.view(false)
 		viewMetricValues(fileMetrics, *TLF, *TLM, *ND, *LCC, *DC)
 
 	} else if *e != "" {
@@ -102,6 +103,19 @@ func main() {
 
 		viewEvolutionMetrics(versionWiseMetrics, false)
 	}
+	// else if *mec != "" {
+	// 	dirs, err := ioutil.ReadDir(*mec)
+	// 	if err != nil {
+	// 		log.Fatal(err)
+	// 	}
+
+	// 	for _, d := range dirs {
+	// 		if d.IsDir() {
+	// 			path := filepath.Join(*mec, d.Name())
+	// 			forEachMethod(path)
+	// 		}
+	// 	}
+	// }
 
 	fmt.Fprintf(os.Stderr, "\nExecution time: %s\n", time.Since(start))
 }

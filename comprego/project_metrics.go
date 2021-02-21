@@ -24,13 +24,13 @@ func findProjectMetrics(metrics []FileMetric) ProjectMetric {
 		}
 
 		for _, lm := range i.tooLongMethods {
-			if lm.TooLongMethodLength > LONG_METHOD_THRESHOLD {
-				tooLongMethods += lm.TooLongMethodLength
-			}
+			// if lm.TooLongMethodLength > LONG_METHOD_THRESHOLD {
+			tooLongMethods += lm.TooLongMethodLength
+			// }
 		}
 
 		for _, nd := range i.nestingDepth {
-			nestingDepthSloc += nd.MaxNestingDepth
+			nestingDepthSloc += nd.NestingDepthLines
 		}
 
 		totalComments += i.totalComments
@@ -66,7 +66,7 @@ type ProjectMetric struct {
 // I am ripon videos
 func (p ProjectMetric) view(csv bool) {
 	if !csv {
-		fmt.Println("--- Project Maintainability Metrics ---")
+		fmt.Println("--- Project Comprehensibility Metrics ---")
 		fmt.Printf("%-25s: %05.2f\n", "Too Long Files", p.TooLongFiles)
 		fmt.Printf("%-25s: %05.2f\n", "Too Long Methods", p.TooLongMethods)
 		fmt.Printf("%-25s: %05.2f\n", "Nesting Depth", p.NestingDepth)
@@ -76,7 +76,6 @@ func (p ProjectMetric) view(csv bool) {
 		// fmt.Println("lf,lm,nd,lcc,cd")
 		fmt.Printf("%.2f,%.2f,%.2f,%.2f,%.2f\n", p.TooLongFiles, p.TooLongMethods, p.NestingDepth, p.CommentCoherence, p.CommentDuplicates)
 	}
-
 }
 
 // i am ripon video

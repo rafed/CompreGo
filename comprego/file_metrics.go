@@ -17,21 +17,31 @@ type FileMetric struct {
 	FileLength int
 
 	tooLongMethods []tooLongMethodStorer
-	nestingDepth   []nestingDepthStorer
+	nilsInMethods  []nilsInMethodStorer
+
+	nestingDepth []nestingDepthStorer
 
 	totalComments     int
 	badComments       []badCommentStorer
 	duplicateComments duplicateCommentStorer
 }
 
+type nilsInMethodStorer struct {
+	FunctionCount int
+	NilCount      int
+	SLOC          int
+}
+
 type tooLongMethodStorer struct {
 	FunctionName        string
 	TooLongMethodLength int
+	FunctionBody        string
 }
 
 type nestingDepthStorer struct {
-	MaxNestingDepth int
-	FunctionName    string
+	FunctionName      string
+	MaxNestingDepth   int
+	NestingDepthLines int
 }
 
 type badCommentStorer struct {
@@ -80,6 +90,8 @@ func findFileMetrics(filename string) []FileMetric {
 			if len(contents) == 0 {
 				return err
 			}
+
+			// fmt.Printf("Filepath: %s\n", path)
 
 			var metric FileMetric
 			metric.FileName = path
